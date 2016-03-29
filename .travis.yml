@@ -1,7 +1,7 @@
 language : python
 python :
-    - "2.7"
+    - "3.5"
 script :
-    - python testbot.py blank_test
+    - python bot.py blank_test
 sudo : required
 dist : wily
