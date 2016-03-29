@@ -6,25 +6,25 @@ import pickle
 import os
 import sys
 
-persist_admins = open('persist_admins.bin',mode='r+')
-persist_channels = open('persist_channels.bin',mode='r+')
+persist_admins = open('persist_admins.bin',mode='rb+')
+persist_channels = open('persist_channels.bin',mode='rb+')
 
 def stop():
     pickle_save()
     os.execl(sys.executable, sys.executable, *sys.argv)
-    
+
 if sys.argv[0] == "blank_test":
     quit()
-    
+
 def ping(data):
-    irc.send( "PONG " + data.split() [ 1 ] + "\r\n" )
+    irc.send(( "PONG " + data.split() [ 1 ] + "\r\n" ).encode('utf-8'))
 
 def argument(data):
     arg = ""
     for i in data.split(":")[2].split()[1:]:
         arg += i
 
-    return(arg) 
+    return(arg)
 
 
 def send(data, message):
@@ -35,7 +35,7 @@ def send(data, message):
     destination = data.split()[2]
 
     if destination[0] == "#":
-        irc.send( "PRIVMSG " + destination + " :" + message + "\r\n")
+        irc.send(( "PRIVMSG " + destination + " :" + message + "\r\n").encode('utf-8'))
 
     else:
         irc.send( "PRIVMSG " + sender + " :" + message + "\r\n")
@@ -48,7 +48,7 @@ def hello(data):
 
 
 def arithmetic(data):
-    
+
     expression = argument(data)
     condition = "0123456789+-/*.()"
     newexpression = ""
@@ -155,24 +155,24 @@ data = irc.recv ( 4096 )
 #admins = ["elonus","MSF"]
 print(data)
 
-irc.send ( "NICK ElonusBot2\r\n" )
-irc.send ( "USER ElonusBot2 ElonusBot2 ElonusBot2 :Elonus testbot\r\n" )
+irc.send (( "NICK ElonusBot2\r\n" ).encode('utf-8'))
+irc.send (( "USER ElonusBot2 ElonusBot2 ElonusBot2 :Elonus testbot\r\n" ).encode('utf-8'))
 sleep(2)
-irc.send ( "PRIVMSG NickServ: identify elonusbot gutta4197\r\n")
+irc.send (( "PRIVMSG NickServ: identify elonusbot gutta4197\r\n" ).encode('utf-8'))
 
 data = irc.recv(4096)
 
 pickle_load()
 
 for i in channels:
-    irc.send ( "JOIN " + i + "\r\n" )
-    irc.send("PRIVMSG " + i + " :Hello, I am ElonusBot and I love pancakes!\r\n")
+    irc.send (( "JOIN " + i + "\r\n" ).encode('utf-8'))
+    irc.send (("PRIVMSG " + i + " :Hello, I am ElonusBot and I love pancakes!\r\n").encode('utf-8'))
     sleep(0.5)
 
 sleep(1)
 
 while True:
-    data = irc.recv(4096).strip("\r\n")
+    data = irc.recv(4096).decode('utf-8').strip("\r\n");
     print(data)
 
     if data.find("PING") != -1:
@@ -188,11 +188,11 @@ while True:
             for i in message:
                 new_message += i
             message = new_message
-            
+
         codeword = message.split()[0]
         codeword = codeword.lower()
         sender = data.split("!")[0].strip(":")
-        
+
         data2 = str(data)
 
         if codeword in functions:
@@ -201,7 +201,6 @@ while True:
                 send(data, codeword + " requires admin access")
 
             else:
-                
                 if functions[codeword]["argument"]:
                     try:
                         message.split()[1]
