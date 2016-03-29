@@ -127,8 +127,6 @@ def pickle_load():
     admins.append("msf-jarvis")
 
 def pickle_save():
-    global persist_channels
-    global persist_admins
     persist_channels.close()
     persist_admins.close()
     persist_admins = open('persist_admins.bin',mode='w+')
@@ -139,7 +137,7 @@ def pickle_save():
     persist_channels.flush()
 
 def source():
-    irc.send(("The source is available at https://github.com/elonus/elonusbot .  Fork and improve!").encode('utf-8'))
+    irc.send("The source is available at https://github.com/elonus/elonusbot .  Fork and improve!")
 
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
@@ -182,11 +180,11 @@ while True:
 
     if data.find("PING") != -1:
         ping(data)
-    elif data.find(".stop") != -1:
+    if data.find(".stop") != -1:
         stop()
-    elif data.find(".source") != -1:
+    if data.find(".source") != -1:
         source()
-    elif data.find(".update") != -1:
+    if data.find(".update") != -1:
         update()
     elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
