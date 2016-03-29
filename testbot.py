@@ -67,11 +67,14 @@ def hello(data):
 def arithmetic(data):
 
     expression = argument(data)
-    condition = "0123456789+-/*.()"
+    condition = "0123456789+-/*.() "
     newexpression = ""
     for i in expression:
         if i in condition:
             newexpression += str(i)
+        else:
+            send (data, "Error! Invalid input")
+            return
 
     if ("**" in newexpression):
         answer = "You tried to use a power. Unfortunately I do not have that functionnality at the moment."
@@ -79,15 +82,18 @@ def arithmetic(data):
         answer = "Your expression was too long. I only accept expressions up to 15 characters long."
 
     else:
-
         try:
-            answer = eval("1.0 * " + newexpression)
+            __eval_return = eval("1.0 * " + newexpression)
+            answer = "The answer to " + expression + " is: " + str(__eval_return)
         except ZeroDivisionError:
             answer = "Error! You tried to divide by zero"
         except SyntaxError:
             answer = "Error! Invalid input"
+        except Exception as e:
+            __error = str(e)
+            answer = "Error! " + __error
 
-    send(data, "The answer to " + expression + " is: " + str(answer))
+    send(data, answer)
 
 
 def join_channel(data):
