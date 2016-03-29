@@ -24,7 +24,7 @@ def argument(data):
     for i in data.split(":")[2].split()[1:]:
         arg += i
 
-    return(arg) 
+    return(arg)
 
 
 def send(data, message):
