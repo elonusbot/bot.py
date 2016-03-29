@@ -19,6 +19,8 @@ def save_config(__obj, __file):
     try:
         with open(__file, 'w') as f:
             json.dump(__obj, f, indent=2)
+            # write a newline at end of file
+            f.write('\n')
     except Exception as e:
         print (e)
         return False
