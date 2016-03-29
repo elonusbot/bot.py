@@ -35,7 +35,7 @@ def send(data, message):
     destination = data.split()[2]
 
     if destination[0] == "#":
-        irc.send(( "PRIVMSG " + destination + " :" + message + "\r\n").encode('utf-8'))
+        irc.send( ( "PRIVMSG " + destination + " :" + message + "\r\n").encode('utf-8') )
 
     else:
         irc.send( "PRIVMSG " + sender + " :" + message + "\r\n")
@@ -139,7 +139,8 @@ def pickle_save():
     persist_channels.flush()
 
 def source():
-    irc.send(("The source is available at https://github.com/elonus/elonusbot .  Fork and improve!").encode('utf-8'))
+    print("source called!")
+    send( data, ("The source is available at https://github.com/elonus/elonusbot .  Fork and improve!") )
 
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
@@ -182,13 +183,17 @@ while True:
 
     if data.find("PING") != -1:
         ping(data)
-    elif data.find(".stop") != -1:
+        continue
+    if data.find(".stop") != -1:
         stop()
-    elif data.find(".source") != -1:
+        continue
+    if data.find(".source") != -1:
         source()
-    elif data.find(".update") != -1:
+        continue
+    if data.find(".update") != -1:
         update()
-    elif data.find("PRIVMSG") != -1:
+        continue
+    if data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
         if type(message) == list:
             new_message = ""
