@@ -2,21 +2,36 @@
 
 import socket
 from time import sleep
-import pickle
+import json
 import os
 import sys
 
-persist_admins = open('persist_admins.bin',mode='rb+')
-persist_channels = open('persist_channels.bin',mode='rb+')
+def load_config(__file):
+    __local_config = False
+    try:
+        with open(__file) as f:
+            __local_config = json.load(f)
+    except Exception as e:
+        print (e)
+    return __local_config
+
+def save_config(__obj, __file):
+    try:
+        with open(__file, 'w') as f:
+            json.dump(__obj, f, indent=2)
+    except Exception as e:
+        print (e)
+        return False
+    return True
 
 def stop():
-    pickle_save()
-    os.execl(sys.executable, sys.executable, *sys.argv)
-
-if sys.argv[0] == "blank_test":
+    global config
+    if save_config(config, 'config.json') == False:
+        print ("error saving config! any changes will not be saved!")
     quit()
 
 def ping(data):
+    global irc
     irc.send(( "PONG " + data.split() [ 1 ] + "\r\n" ).encode('utf-8'))
 
 def argument(data):
@@ -74,36 +89,40 @@ def arithmetic(data):
 
 
 def join_channel(data):
+    global config
     message = data.split(":")[2]
     channel_name = message.split()[1]
-    if channel_name in channels:
+    if channel_name in config['channels']:
         send(data, "I am already in " + channel_name)
     else:
         irc.send("JOIN " + channel_name + "\r\n")
         send(data, "I have joined " + channel_name)
-        channels.append(channel_name)
+        config['channels'].append(channel_name)
 def update():
     os.system('git pull')
 
 def part_channel(data):
+    global config
     message = data.split(":")[2]
     channel_name = message.split()[1]
-    if channel_name not in channels:
+    if channel_name not in config['channels']:
         send(data, "I am not in " + channel_name)
     else:
         irc.send("PART " + channel_name + "\r\n")
         send(data, "I have left " + channel_name)
-        channels.remove(channel_name)
+        config['channels'].remove(channel_name)
 
 def add_admin(data):
+    global config
     message = data.split(":")[2]
     add_name = message.split()[1]
-    admins.append(add_name)
+    config['admins'].append(add_name)
     send(data, add_name + " has been added to the admin list")
 
 def list_admins(data):
+    global config
     adminList = ""
-    for i in admins:
+    for i in config['admins']:
         if len(adminList) == 0:
             adminList += i
 
@@ -118,25 +137,6 @@ def help_commands(data):
         command_list += " " + i
 
     send(data, "This is a list of the available commands:" + command_list)
-def pickle_load():
-    global admins
-    global channels
-    admins = pickle.load(file=persist_admins)
-    channels = pickle.load(file=persist_channels)
-    channels.append("#team-redux")
-    admins.append("msf-jarvis")
-
-def pickle_save():
-    global persist_channels
-    global persist_admins
-    persist_channels.close()
-    persist_admins.close()
-    persist_admins = open('persist_admins.bin',mode='w+')
-    persist_channels = open('persist_channels.bin',mode='w+')
-    pickle.dump(admins,persist_admins,protocol=None)
-    pickle.dump(channels,persist_channels,protocol=None)
-    persist_admins.flush()
-    persist_channels.flush()
 
 def source():
     print("source called!")
@@ -153,12 +153,17 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".update" : {"argument": False, "function": update, "require_admin": False}
              , ".source" : {"argument": False, "function": source, "require_admin": False}}
 
+config = load_config('config.json')
+if config == False:
+    quit()
+
 network = "irc.freenode.net"
 port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
-#admins = ["elonus","MSF"]
+
+
 print(data)
 
 irc.send (( "NICK ElonusBot2\r\n" ).encode('utf-8'))
@@ -168,9 +173,7 @@ irc.send (( "PRIVMSG NickServ: identify elonusbot gutta4197\r\n" ).encode('utf-8
 
 data = irc.recv(4096)
 
-pickle_load()
-
-for i in channels:
+for i in config['channels']:
     irc.send (( "JOIN " + i + "\r\n" ).encode('utf-8'))
     irc.send (("PRIVMSG " + i + " :Hello, I am ElonusBot and I love pancakes!\r\n").encode('utf-8'))
     sleep(0.5)
@@ -209,7 +212,7 @@ while True:
 
         if codeword in functions:
 
-            if (sender not in admins) and functions[codeword]["require_admin"]:
+            if (sender not in config['admins']) and functions[codeword]["require_admin"]:
                 send(data, codeword + " requires admin access")
 
             else:
