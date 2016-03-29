@@ -148,7 +148,7 @@ def help_commands(data):
 
 def source():
     print("source called!")
-    send( data, ("The source is available at https://github.com/elonus/elonusbot .  Fork and improve!") )
+    send( data, ("The source is available at https://github.com/elonusbot/bot.py .  Fork and improve!") )
 
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
