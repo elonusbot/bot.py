@@ -161,6 +161,9 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".update" : {"argument": False, "function": update, "require_admin": False}
              , ".source" : {"argument": False, "function": source, "require_admin": False}}
 
+if sys.argv[0] == "blank_test":
+    quit()
+
 config = load_config('config.json')
 if config == False:
     quit()
