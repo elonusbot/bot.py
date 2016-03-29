@@ -18,7 +18,7 @@ def load_config(__file):
 def save_config(__obj, __file):
     try:
         with open(__file, 'w') as f:
-            json.dump(__obj, f, indent=2)
+            json.dump(__obj, f, indent=2, sort_keys=True)
             # write a newline at end of file
             f.write('\n')
     except Exception as e:
