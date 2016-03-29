@@ -12,10 +12,10 @@ persist_channels = open('persist_channels.bin',mode='r+')
 def stop():
     pickle_save()
     os.execl(sys.executable, sys.executable, *sys.argv)
-    
+
 if sys.argv[0] == "blank_test":
     quit()
-    
+
 def ping(data):
     irc.send( "PONG " + data.split() [ 1 ] + "\r\n" )
 
@@ -48,7 +48,7 @@ def hello(data):
 
 
 def arithmetic(data):
-    
+
     expression = argument(data)
     condition = "0123456789+-/*.()"
     newexpression = ""
@@ -188,11 +188,11 @@ while True:
             for i in message:
                 new_message += i
             message = new_message
-            
+
         codeword = message.split()[0]
         codeword = codeword.lower()
         sender = data.split("!")[0].strip(":")
-        
+
         data2 = str(data)
 
         if codeword in functions:
@@ -201,7 +201,6 @@ while True:
                 send(data, codeword + " requires admin access")
 
             else:
-                
                 if functions[codeword]["argument"]:
                     try:
                         message.split()[1]
