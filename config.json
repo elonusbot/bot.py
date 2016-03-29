@@ -1,14 +1,14 @@
 {
-  "channels": [
-    "#elenusbottest",
-    "#elenusbottest2",
-    "#team-redux"
-  ],
   "admins": [
     "elonus",
     "MSF",
     "MSF-Jarvis",
     "thewisenerd",
     "Manuel15"
+  ],
+  "channels": [
+    "#elenusbottest",
+    "#elenusbottest2",
+    "#team-redux"
   ]
 }
