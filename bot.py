@@ -226,7 +226,12 @@ while True:
                 new_message += i
             message = new_message
 
-        codeword = message.split()[0]
+        try:
+            codeword = message.split()[0]
+        
+        except IndexError:
+            continue 
+
         codeword = codeword.lower()
         sender = data.split("!")[0].strip(":")
 
