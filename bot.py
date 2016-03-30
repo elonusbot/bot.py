@@ -165,8 +165,9 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
 __args = sys.argv
 if __args[0] == __file__:
     __args.pop(0)
-if __args[0] == "blank_test":
-    quit()
+if (len(__args)):
+    if __args[0] == "blank_test":
+        quit()
 
 config = load_config('config.json')
 if config == False:
