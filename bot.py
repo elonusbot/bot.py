@@ -161,14 +161,6 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".source" : {"argument": False, "function": source, "require_admin": False}
              , ".update" : {"argument": False, "function": update, "require_admin": False}}
 
-# TODO : use args library here
-__args = sys.argv
-if __args[0] == __file__:
-    __args.pop(0)
-if (len(__args)):
-    if __args[0] == "blank_test":
-        quit()
-
 config = load_config('config.json')
 if config == False:
     quit()
