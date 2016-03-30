@@ -123,8 +123,11 @@ def add_admin():
     global config
     message = data.split(":")[2]
     add_name = message.split()[1]
-    config['admins'].append(add_name)
-    send(data, add_name + " has been added to the admin list")
+    if add_name not in config["admins"]:
+        config['admins'].append(add_name)
+        send(data, add_name + " has been added to the admin list")
+    else:
+        send(data, add_name + " is already an admin")
 
 def list_admins():
     global config
@@ -142,8 +145,11 @@ def remove_admin():
     global config
     message = data.split(":")[2]
     remove_name = message.split()[1]
-    config["admins"].remove(remove_name)
-    send(data, remove_name + " har been removed from the admin list")
+    if remove_name in config["admins"]:
+        config["admins"].remove(remove_name)
+        send(data, remove_name + " has been removed from the admin list")
+    else:
+        send(data, remove_name + " is not an admin")
 
 def help_commands():
     command_list = ""
