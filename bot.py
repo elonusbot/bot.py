@@ -48,7 +48,6 @@ def send(data, message):
     """
     sends message to channel or user depending on where it is from
     """
-    sender = data.split("!")[0].strip(":")
     destination = data.split()[2]
 
     if destination[0] == "#":
@@ -59,7 +58,6 @@ def send(data, message):
 
 
 def hello():
-    sender = data.split("!")[0].strip(":")
     answer = "Hello " + sender + "!"
     send(data, answer)
 
@@ -216,8 +214,6 @@ while True:
         codeword = message.split()[0]
         codeword = codeword.lower()
         sender = data.split("!")[0].strip(":")
-
-        data2 = str(data)
 
         if codeword in functions:
 
