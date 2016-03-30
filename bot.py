@@ -32,11 +32,11 @@ def stop():
         print ("error saving config! any changes will not be saved!")
     quit()
 
-def ping(data):
+def ping():
     global irc
     irc.send(( "PONG " + data.split() [ 1 ] + "\r\n" ).encode('utf-8'))
 
-def argument(data):
+def argument():
     arg = ""
     for i in data.split(":")[2].split()[1:]:
         arg += i
@@ -58,15 +58,15 @@ def send(data, message):
         irc.send( "PRIVMSG " + sender + " :" + message + "\r\n")
 
 
-def hello(data):
+def hello():
     sender = data.split("!")[0].strip(":")
     answer = "Hello " + sender + "!"
     send(data, answer)
 
 
-def arithmetic(data):
+def arithmetic():
 
-    expression = argument(data)
+    expression = argument()
     condition = "0123456789+-/*.() "
     newexpression = ""
     for i in expression:
@@ -96,7 +96,7 @@ def arithmetic(data):
     send(data, answer)
 
 
-def join_channel(data):
+def join_channel():
     global config
     message = data.split(":")[2]
     channel_name = message.split()[1]
@@ -106,10 +106,11 @@ def join_channel(data):
         irc.send("JOIN " + channel_name + "\r\n")
         send(data, "I have joined " + channel_name)
         config['channels'].append(channel_name)
+
 def update():
     os.system('git pull')
 
-def part_channel(data):
+def part_channel():
     global config
     message = data.split(":")[2]
     channel_name = message.split()[1]
@@ -127,7 +128,7 @@ def add_admin(data):
     config['admins'].append(add_name)
     send(data, add_name + " has been added to the admin list")
 
-def list_admins(data):
+def list_admins():
     global config
     adminList = ""
     for i in config['admins']:
@@ -139,7 +140,7 @@ def list_admins(data):
 
     send(data, "This is a list of the current admins: " + adminList)
 
-def help_commands(data):
+def help_commands():
     command_list = ""
     for i in functions:
         command_list += " " + i
@@ -157,9 +158,10 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
              , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
              , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
-             , ".stop" : {"argument": False, "funtion": stop, "require_admin": True}
+             , ".stop" : {"argument": False, "function": stop, "require_admin": True}
              , ".update" : {"argument": False, "function": update, "require_admin": False}
-             , ".source" : {"argument": False, "function": source, "require_admin": False}}
+             , ".source" : {"argument": False, "function": source, "require_admin": False}
+             , ".update" : {"argument": False, "function": update, "require_admin": False}}
 
 # TODO : use args library here
 __args = sys.argv
@@ -200,18 +202,10 @@ while True:
     print(data)
 
     if data.find("PING") != -1:
-        ping(data)
+        ping()
         continue
-    if data.find(".stop") != -1:
-        stop()
-        continue
-    if data.find(".source") != -1:
-        source()
-        continue
-    if data.find(".update") != -1:
-        update()
-        continue
-    if data.find("PRIVMSG") != -1:
+
+    elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
         if type(message) == list:
             new_message = ""
@@ -239,7 +233,7 @@ while True:
                         send(data, codeword + " expects an argument")
 
                     else:
-                        functions[codeword]["function"](data2)
+                        functions[codeword]["function"]()
 
                 else:
-                    functions[codeword]["function"](data2)
+                    functions[codeword]["function"]()
