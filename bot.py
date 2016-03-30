@@ -119,7 +119,7 @@ def part_channel():
         send(data, "I have left " + channel_name)
         config['channels'].remove(channel_name)
 
-def add_admin(data):
+def add_admin():
     global config
     message = data.split(":")[2]
     add_name = message.split()[1]
@@ -137,6 +137,13 @@ def list_admins():
             adminList += ", " + i
 
     send(data, "This is a list of the current admins: " + adminList)
+
+def remove_admin():
+    global config
+    message = data.split(":")[2]
+    remove_name = message.split()[1]
+    config["admins"].remove(remove_name)
+    send(data, remove_name + " har been removed from the admin list")
 
 def help_commands():
     command_list = ""
@@ -159,7 +166,9 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".stop" : {"argument": False, "function": stop, "require_admin": True}
              , ".update" : {"argument": False, "function": update, "require_admin": False}
              , ".source" : {"argument": False, "function": source, "require_admin": False}
-             , ".update" : {"argument": False, "function": update, "require_admin": False}}
+             , ".update" : {"argument": False, "function": update, "require_admin": False}
+             , ".removeadmin" : {"argument" : True, "function" : remove_admin, "require_admin" : True}}
+
 
 # TODO : use args library here
 __args = sys.argv
