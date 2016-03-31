@@ -29,7 +29,7 @@ def save_config(__obj, __file):
 def save_load_config():
     global config
     if save_config(config, 'config.json') == False:
-        send(data, "Warning! Config was not saved, so next time the bot starts the action will now be remembered")
+        send(data, "Warning! Config was not saved, so next time the bot starts the action will not be remembered")
     temp = load_config('config.json')
     if temp == False:
         send(data, "Warning! Config file could not be loaded, the old config will still be used")
