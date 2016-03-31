@@ -54,7 +54,7 @@ def send(data, message):
         irc.send( ( "PRIVMSG " + destination + " :" + message + "\r\n").encode('utf-8') )
 
     else:
-        irc.send( "PRIVMSG " + sender + " :" + message + "\r\n")
+        irc.send( ( "PRIVMSG " + sender + " :" + message + "\r\n").encode('utf-8') )
 
 
 def hello():
