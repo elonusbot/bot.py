@@ -47,10 +47,7 @@ def ping():
     irc.send(( "PONG " + data.split() [ 1 ] + "\r\n" ).encode('utf-8'))
 
 def argument():
-    arg = ""
-    for i in data.split(":")[2].split()[1:]:
-        arg += i
-
+    arg = " ".join(message.split()[1:])
     return(arg)
 
 
@@ -194,8 +191,8 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
 __args = sys.argv
 if __args[0] == __file__:
     __args.pop(0)
-#if __args[0] == "blank_test":
-#    quit()
+if __args[0] == "blank_test":
+    quit()
 
 config = load_config('config.json')
 if config == False:
@@ -233,12 +230,7 @@ while True:
         continue
 
     elif data.find("PRIVMSG") != -1:
-        message = data.split(":")[2:]
-        if type(message) == list:
-            new_message = ""
-            for i in message:
-                new_message += i
-            message = new_message
+        message = ":".join(data.split(":")[2:])
 
         try:
             codeword = message.split()[0]
