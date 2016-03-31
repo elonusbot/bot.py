@@ -167,7 +167,7 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".join" : {"argument" : True, "function" : join_channel, "require_admin" : True}
              , ".part" : {"argument" : True, "function" : part_channel, "require_admin" : True}
              , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
-             , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
+             , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : True}
              , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
              , ".stop" : {"argument": False, "function": stop, "require_admin": True}
              , ".update" : {"argument": False, "function": update, "require_admin": False}
