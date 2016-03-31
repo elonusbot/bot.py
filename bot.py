@@ -26,6 +26,16 @@ def save_config(__obj, __file):
         return False
     return True
 
+def save_load_config():
+    global config
+    if save_config(config, 'config.json') == False:
+        send(data, "Warning! Config was not saved, so next time the bot starts the action will now be remembered")
+    temp = load_config('config.json')
+    if temp == False:
+        send(data, "Warning! Config file could not be loaded, the old config will still be used")
+    else:
+        config = temp
+
 def stop():
     global config
     if save_config(config, 'config.json') == False:
@@ -104,6 +114,7 @@ def join_channel():
         irc.send("JOIN " + channel_name + "\r\n")
         send(data, "I have joined " + channel_name)
         config['channels'].append(channel_name)
+        save_load_config()
 
 def update():
     os.system('git pull')
@@ -118,6 +129,7 @@ def part_channel():
         irc.send("PART " + channel_name + "\r\n")
         send(data, "I have left " + channel_name)
         config['channels'].remove(channel_name)
+        save_load_config()
 
 def add_admin():
     global config
@@ -126,6 +138,7 @@ def add_admin():
     if add_name not in config["admins"]:
         config['admins'].append(add_name)
         send(data, add_name + " has been added to the admin list")
+        save_load_config()
     else:
         send(data, add_name + " is already an admin")
 
@@ -148,6 +161,7 @@ def remove_admin():
     if remove_name in config["admins"]:
         config["admins"].remove(remove_name)
         send(data, remove_name + " has been removed from the admin list")
+        save_load_config()
     else:
         send(data, remove_name + " is not an admin")
 
@@ -180,8 +194,8 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
 __args = sys.argv
 if __args[0] == __file__:
     __args.pop(0)
-if __args[0] == "blank_test":
-    quit()
+#if __args[0] == "blank_test":
+#    quit()
 
 config = load_config('config.json')
 if config == False:
