@@ -187,15 +187,9 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".removeadmin" : {"argument" : True, "function" : remove_admin, "require_admin" : True}}
 
 
-# TODO : use args library here
-__args = sys.argv
-if __args[0] == __file__:
-    __args.pop(0)
-if __args[0] == "blank_test":
-    quit()
-
 config = load_config('config.json')
 if config == False:
+    print("Config file not loaded. Exception!!")
     quit()
 
 network = "irc.freenode.net"
