@@ -216,7 +216,7 @@ for i in config['channels']:
 sleep(1)
 
 while True:
-    data = irc.recv(4096).decode('utf-8').strip("\r\n");
+    data = irc.recv(4096).decode('utf-8').strip(os.linesep);
     print(data)
 
     if data.find("PING") != -1:
