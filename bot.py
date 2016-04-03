@@ -132,9 +132,9 @@ def add_admin():
     global config
     message = data.split(":")[2]
     add_name = message.split()[1]
-    send(data, "/WHOIS", add_name)
-    if add_name == "cybo_" :
-        continue
+
+    if add_name == "cybo_":
+       send(data, "cybo_ is not allowed as an admin after giving blk_jack special treatment!")
     elif add_name not in config["admins"]:
         config['admins'].append(add_name)
         send(data, add_name + " has been added to the admin list")
