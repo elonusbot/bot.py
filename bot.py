@@ -171,6 +171,12 @@ def help_commands():
         command_list += " " + i
 
     send(data, "This is a list of the available commands:" + command_list)
+def connect() :
+    network = "irc.freenode.net"
+    port = 6667
+    irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
+    irc.connect ( ( network, port ) )
+    data = irc.recv ( 4096 )
 
 def source():
     print("source called!")
@@ -195,13 +201,13 @@ if config == False:
     print("Config file not loaded. Exception!!")
     quit()
 
-network = "irc.freenode.net"
-port = 6667
-irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
-irc.connect ( ( network, port ) )
-data = irc.recv ( 4096 )
-
-
+while True:
+    connect()
+    if data == "":
+        irc.close()
+        continue
+    else :
+        break
 print(data)
 
 irc.send (( "NICK ElonusBot2\r\n" ).encode('utf-8'))
