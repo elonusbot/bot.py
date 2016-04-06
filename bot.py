@@ -5,260 +5,58 @@ from time import sleep
 import json
 import os
 import sys
+import inspect
 
-def load_config(__file):
-    __local_config = False
-    try:
-        with open(__file) as f:
-            __local_config = json.load(f)
-    except Exception as e:
-        print (e)
-    return __local_config
+acceptedArgs = ["sender", "target", "message", "command", "argument"]
 
-def save_config(__obj, __file):
-    try:
-        with open(__file, 'w') as f:
-            json.dump(__obj, f, indent=2, sort_keys=True)
-            # write a newline at end of file
-            f.write('\n')
-    except Exception as e:
-        print (e)
-        return False
-    return True
+class data(object):
+    def __init__(self, raw_data):
+        self.raw_data = raw_data
 
-def save_load_config():
-    global config
-    if save_config(config, 'config.json') == False:
-        send(data, "Warning! Config was not saved, so next time the bot starts the action will not be remembered")
-    temp = load_config('config.json')
-    if temp == False:
-        send(data, "Warning! Config file could not be loaded, the old config will still be used")
-    else:
-        config = temp
+    def getSender(self):
+        return self.raw_data.split("!", 1)[0].strip(":")
 
-def stop():
-    global config
-    if save_config(config, 'config.json') == False:
-        print ("error saving config! any changes will not be saved!")
-    quit()
+    def getTarget(self):
+        return self.raw_data.split()[2]
 
-def ping():
-    global irc
-    irc.send(( "PONG " + data.split() [ 1 ] + "\r\n" ).encode('utf-8'))
+    def isPrivate(self):
+        return self.getTarget(self)[0] != "#"
 
-def argument():
-    arg = " ".join(message.split()[1:])
-    return(arg)
+    def getMessage(self):
+        return self.raw_data.split(":", 2)[2]
 
+    def getCommand(self):
+        return self.getMessage(self).split(None, 1)[0]
 
-def send(data, message):
-    """
-    sends message to channel or user depending on where it is from
-    """
-    destination = data.split()[2]
+    def getArgument(self):
+        return self.getMessage(self).split(None, 1)[1]
+    
 
-    if destination[0] == "#":
-        irc.send( ( "PRIVMSG " + destination + " :" + message + "\r\n").encode('utf-8') )
+def functionInspect(function):
+    arguments = signature(function)
 
-    else:
-        irc.send( ( "PRIVMSG " + sender + " :" + message + "\r\n").encode('utf-8') )
+    for arg in arguments:
+        if arg not in acceptedArgs or "*" in arg:
+            return "Function uses invalid arguments"
+
+    argsToPass = {}
+
+    if "sender" in arguments:
+        argsToPass["sender"] = data.getSender()
+
+    if "target" in arguments:
+        argsToPass["target"] = data.getTarget()
+
+    if "message" in arguments:
+        argsToPass["message"] = data.getMessage()
+
+    if "command" in arguments:
+        argsToPass["command"] = data.getCommand()
+
+    if "argument" in arguments:
+        argsToPass["argument"] = data.getArgument()
+
+    return function(**argsToPass)
 
 
-def hello():
-    answer = "Hello " + sender + "!"
-    send(data, answer)
-
-
-def arithmetic():
-
-    expression = argument()
-    condition = "0123456789+-/*.() "
-    newexpression = ""
-    for i in expression:
-        if i in condition:
-            newexpression += str(i)
-        else:
-            send (data, "Error! Invalid input")
-            return
-
-    if ("**" in newexpression):
-        answer = "You tried to use a power. Unfortunately I do not have that functionnality at the moment."
-    if (len(newexpression) > 15):
-        answer = "Your expression was too long. I only accept expressions up to 15 characters long."
-
-    else:
-        try:
-            __eval_return = eval("1.0 * " + newexpression)
-            answer = "The answer to " + expression + " is: " + str(__eval_return)
-        except ZeroDivisionError:
-            answer = "Error! You tried to divide by zero"
-        except SyntaxError:
-            answer = "Error! Invalid input"
-        except Exception as e:
-            __error = str(e)
-            answer = "Error! " + __error
-
-    send(data, answer)
-
-
-def join_channel():
-    global config
-    message = data.split(":")[2]
-    channel_name = message.split()[1]
-    if channel_name in config['channels']:
-        send(data, "I am already in " + channel_name)
-    else:
-        irc.send("JOIN " + channel_name + "\r\n")
-        send(data, "I have joined " + channel_name)
-        config['channels'].append(channel_name)
-        save_load_config()
-
-def update():
-    os.system('git pull')
-
-def part_channel():
-    global config
-    message = data.split(":")[2]
-    channel_name = message.split()[1]
-    if channel_name not in config['channels']:
-        send(data, "I am not in " + channel_name)
-    else:
-        irc.send("PART " + channel_name + "\r\n")
-        send(data, "I have left " + channel_name)
-        config['channels'].remove(channel_name)
-        save_load_config()
-
-def add_admin():
-    global config
-    message = data.split(":")[2]
-    add_name = message.split()[1]
-
-    if add_name == "cybo_":
-       send(data, "cybo_ is not allowed as an admin after giving blk_jack special treatment!")
-    elif add_name not in config["admins"]:
-        config['admins'].append(add_name)
-        send(data, add_name + " has been added to the admin list")
-        save_load_config()
-    else:
-        send(data, add_name + " is already an admin")
-
-def list_admins():
-    global config
-    adminList = ""
-    for i in config['admins']:
-        if len(adminList) == 0:
-            adminList += i
-
-        else:
-            adminList += ", " + i
-
-    send(data, "This is a list of the current admins: " + adminList)
-
-def remove_admin():
-    global config
-    message = data.split(":")[2]
-    remove_name = message.split()[1]
-    if remove_name in config["admins"]:
-        config["admins"].remove(remove_name)
-        send(data, remove_name + " has been removed from the admin list")
-        save_load_config()
-    else:
-        send(data, remove_name + " is not an admin")
-
-def help_commands():
-    command_list = ""
-    for i in functions:
-        command_list += " " + i
-
-    send(data, "This is a list of the available commands:" + command_list)
-def connect() :
-    network = "irc.freenode.net"
-    port = 6667
-    irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
-    irc.connect ( ( network, port ) )
-    data = irc.recv ( 4096 )
-
-def source():
-    print("source called!")
-    send( data, ("The source is available at https://github.com/elonusbot/bot.py .  Fork and improve!") )
-
-functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
-             , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
-             , ".join" : {"argument" : True, "function" : join_channel, "require_admin" : True}
-             , ".part" : {"argument" : True, "function" : part_channel, "require_admin" : True}
-             , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
-             , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : True}
-             , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
-             , ".stop" : {"argument": False, "function": stop, "require_admin": True}
-             , ".update" : {"argument": False, "function": update, "require_admin": False}
-             , ".source" : {"argument": False, "function": source, "require_admin": False}
-             , ".update" : {"argument": False, "function": update, "require_admin": False}
-             , ".removeadmin" : {"argument" : True, "function" : remove_admin, "require_admin" : True}}
-
-
-config = load_config('config.json')
-if config == False:
-    print("Config file not loaded. Exception!!")
-    quit()
-
-while True:
-    connect()
-    if data == "":
-        irc.close()
-        continue
-    else :
-        break
-print(data)
-
-irc.send (( "NICK ElonusBot2\r\n" ).encode('utf-8'))
-irc.send (( "USER ElonusBot2 ElonusBot2 ElonusBot2 :Elonus testbot\r\n" ).encode('utf-8'))
-sleep(2)
-irc.send (( "PRIVMSG NickServ: identify elonusbot gutta4197\r\n" ).encode('utf-8'))
-
-data = irc.recv(4096)
-
-for i in config['channels']:
-    irc.send (( "JOIN " + i + "\r\n" ).encode('utf-8'))
-    irc.send (("PRIVMSG " + i + " :Hello, I am ElonusBot and I love pancakes!\r\n").encode('utf-8'))
-    sleep(0.5)
-
-sleep(1)
-
-while True:
-    data = irc.recv(4096).decode('utf-8').strip("\r\n");
-    print(data)
-
-    if data.find("PING") != -1:
-        ping()
-        continue
-
-    elif data.find("PRIVMSG") != -1:
-        message = ":".join(data.split(":")[2:])
-
-        try:
-            codeword = message.split()[0]
-        
-        except IndexError:
-            continue 
-
-        codeword = codeword.lower()
-        sender = data.split("!")[0].strip(":")
-
-        if codeword in functions:
-
-            if (sender not in config['admins']) and functions[codeword]["require_admin"]:
-                send(data, codeword + " requires admin access")
-
-            else:
-                if functions[codeword]["argument"]:
-                    try:
-                        message.split()[1]
-
-                    except IndexError:
-                        send(data, codeword + " expects an argument")
-
-                    else:
-                        functions[codeword]["function"]()
-
-                else:
-                    functions[codeword]["function"]()
+    
