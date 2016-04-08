@@ -23,7 +23,10 @@ class data(object): #A class for the raw data from IRC servers
         return self.getTarget(self)[0] != "#"  #Returns True if the message was sent in a private message to the bot, otherwise returns False
 
     def getMessage(self):
-        return self.raw_data.split(":", 2)[2]  #Returns message that was sent, the text otherwise displayed in a normal IRC client
+        return self.raw_data.split(None, 3)[3][1:]  #Returns message that was sent, the text otherwise displayed in a normal IRC client
+
+    def getHostname():
+        return self.raw_data.split("!", 1)[1].split(None, 1)[0].split("@", 1)[1]    #Returns the hostname of the person who sent the message
 
     def isCommand(self):
         return self.getMessage(self)[0] == "."  #Returns True if the message starts with "." and is therefore a command to the bot. Returns False otherwise
