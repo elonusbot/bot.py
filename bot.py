@@ -17,7 +17,7 @@ class data(object): #A class for the raw data from IRC servers
         return self.raw_data.split("!", 1)[0].strip(":")  #Returns the nick of the person who sent the IRC message
 
     def getTarget(self):
-        return self.raw_data.split()[2]  #Returns who the message was sent to, either a channel or a private message to the bot
+        return self.raw_data.split(None, 3)[2]  #Returns who the message was sent to, either a channel or a private message to the bot
 
     def isPrivate(self):
         return self.getTarget(self)[0] != "#"  #Returns True if the message was sent in a private message to the bot, otherwise returns False
