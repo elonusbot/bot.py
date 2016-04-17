@@ -111,4 +111,7 @@ def save_load_config():
     else:
         config = temp
 
-
+def import_modules(config):
+    for module in config["modules"]:
+        import str(module) + ".py"
+        print(str(module) + " is succesfully imported")
