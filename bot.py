@@ -112,9 +112,3 @@ def save_load_config():
         config = temp
 
 
-print 'Begin Plugin Loading.'
-
-# bootstrap the reloader
-eval(compile(open(os.path.join('core', 'reload.py'), 'U').read(),
-             os.path.join('core', 'reload.py'), 'exec'))
-reload(init=True)
