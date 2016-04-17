@@ -7,5 +7,9 @@
   ],
   "channels": [
     "#team-redux"
+  ],
+  "modules": [
+    "ping",
+    "hello"
   ]
 }
