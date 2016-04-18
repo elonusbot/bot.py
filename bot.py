@@ -81,9 +81,6 @@ def functionInspect(function):
     if "server" in argument:
         argsToPass["server"] = data.getServer()
 
-    if "moduleList" in argument:
-        argsToPass["moduleList"] = loadedModules
-
     return function(**argsToPass)  #Calls the function with the argument and value pairs earlier defined
 
 def load_config(__file):
