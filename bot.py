@@ -54,6 +54,9 @@ class data(object): #A class for the raw data from IRC servers
     def getServer(self):  #Is used for ping. Returns the name of the server who send the ping
         return self.raw_data.split(":", 1)[1]
 
+    def getRawData(self):   #Returns the raw data in string form
+        return str(self.raw_data)
+
 def functionInspect(function):
     arguments = signature(function)  #Creates a tuple with the names of the arguments the function accepts
 
@@ -114,14 +117,14 @@ def save_load_config():
         config = temp
 
 def import_modules(config, moduleList):
-    for i in config["modules"]:
+    for i in config["modules"]:   #loops through the module list in config.json
         try:
             tmp = __import__(i)
         except ImportError:
             print("Error importing " + i)
         else:
             print(str(tmp) + " is succesfully imported")
-            loadedModules.append(i)
+            loadedModules.append(i)    #After successful import, adds the name to loadedModules list
 
 
 
