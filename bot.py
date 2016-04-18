@@ -9,6 +9,8 @@ import inspect
 
 acceptedArgs = ["sender", "target", "message", "command", "argument", "server"]  #List over aguments that functions are allowed to use. See comments in the data class for information on what each of them are
 
+loadedModules = []   #A list over the currently loaded modules
+
 class data(object): #A class for the raw data from IRC servers
     def __init__(self, raw_data):
         self.raw_data = raw_data
@@ -79,6 +81,9 @@ def functionInspect(function):
     if "server" in argument:
         argsToPass["server"] = data.getServer()
 
+    if "moduleList" in argument:
+        argsToPass["moduleList"] = loadedModules
+
     return function(**argsToPass)  #Calls the function with the argument and value pairs earlier defined
 
 def load_config(__file):
@@ -111,7 +116,20 @@ def save_load_config():
     else:
         config = temp
 
-def import_modules(config):
-    for module in config["modules"]:
-        import str(module) + ".py"
-        print(str(module) + " is succesfully imported")
+def import_modules(config, moduleList):
+    for i in config["modules"]:
+        try:
+            tmp = __import__(i)
+        except ImportError:
+            print("Error importing " + i)
+        else:
+            print(str(tmp) + " is succesfully imported")
+            loadedModules.append(i)
+
+
+
+
+config = load_config("config.json")
+
+import_modules(config, loadedModules)
+
